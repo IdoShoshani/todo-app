@@ -12,7 +12,7 @@ todo-app/
 ├── templates/          # Jinja2 HTML templates
 │   └── index.html      # Main application template
 ├── Dockerfile          # Multi-stage build with Distroless base
-├── docker-compose.yml # Docker Compose configuration
+├── docker-compose.yml  # Docker Compose configuration
 ├── README.md           # Project documentation
 └── LICENSE             # MIT License
 ```
@@ -65,18 +65,25 @@ The fastest way to get the application running locally:
    ```
 
 3. **Access the application:**
+
    Open your browser and navigate to [http://localhost:8000](http://localhost:8000)
 
-   `To stop the application:`
+4. **Stop the application:**
 
    ```bash
    docker compose down
    ```
 
-   To stop the application and remove all data:
+5. **Stop the application and remove all data:**
 
    ```bash
    docker compose down -v
+   ```
+
+6. **Remove the Docker image locally (if needed):**
+
+   ```bash
+   docker rmi idoshoshani123/my-todo-app:latest
    ```
 
 ### 2. Local Development Setup
@@ -84,7 +91,7 @@ The fastest way to get the application running locally:
 1. **Clone the repository:**
 
    ```bash
-   git clone [<repository-url>](https://gitlab.com/sela-tracks/1109/students/idosh/application/todo-app.git)
+   git clone https://gitlab.com/sela-tracks/1109/students/idosh/application/todo-app.git
    cd todo-app
    ```
 
@@ -117,6 +124,10 @@ The fastest way to get the application running locally:
    uvicorn web_app:app --host 0.0.0.0 --port 8000
    ```
 
+6. **Access the application:**
+
+   Open your browser and navigate to [http://localhost:8000](http://localhost:8000)
+
 ### 3. Docker Deployment
 
 1. **Run the container using the pre-built Docker image from Docker Hub:**
@@ -132,6 +143,31 @@ The fastest way to get the application running locally:
      -p 8000:8000 \
      idoshoshani123/my-todo-app:latest
    ```
+
+2. **Access the application:**
+
+   Open your browser and navigate to [http://localhost:8000](http://localhost:8000)
+
+3. **Remove the application:**
+
+   - **Stop and remove the container:**
+
+     ```bash
+     docker rm -f todo-app
+     ```
+
+   - **Remove the Docker image:**
+
+     ```bash
+     docker rmi idoshoshani123/my-todo-app:latest
+     ```
+
+   - **Clean up unused containers and images:**
+
+     ```bash
+     docker container prune
+     docker image prune
+     ```
 
 ## Environment Variables
 
