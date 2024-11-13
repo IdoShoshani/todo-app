@@ -1,93 +1,202 @@
-# todo-app
+# FastAPI Todo Application
 
+A modern task management application built with [FastAPI](https://fastapi.tiangolo.com/) and [PostgreSQL](https://www.postgresql.org/).
 
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Project Structure
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/sela-tracks/1109/students/idosh/application/todo-app.git
-git branch -M main
-git push -uf origin main
+todo-app/
+├── web_app.py          # FastAPI application and routes
+├── todo_app.py         # Core business logic and database operations
+├── requirements.txt    # Python dependencies
+├── templates/          # Jinja2 HTML templates
+│   └── index.html      # Main application template
+├── Dockerfile          # Multi-stage build with Distroless base
+├── docker-compose.yml # Docker Compose configuration
+├── README.md           # Project documentation
+└── LICENSE             # MIT License
 ```
 
-## Integrate with your tools
+## Key Features
 
-- [ ] [Set up project integrations](https://gitlab.com/sela-tracks/1109/students/idosh/application/todo-app/-/settings/integrations)
+- Complete task management (Create, Read, Update, Delete)
+- Task status tracking (Pending, In Progress, Completed)
+- Secure [PostgreSQL](https://www.postgresql.org/) database integration
+- [Jinja2](https://jinja.palletsprojects.com/) templating for dynamic HTML rendering
+- [Docker](https://www.docker.com/) support with multi-stage build and [Distroless](https://github.com/GoogleContainerTools/distroless) base image
+- Environment variable configuration
+- Robust error handling
 
-## Collaborate with your team
+## Tech Stack
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+- **Backend Framework**: [FastAPI](https://fastapi.tiangolo.com/) 0.109.2
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **Template Engine**: [Jinja2](https://jinja.palletsprojects.com/) 3.1.3
+- **Python Version**: [Python 3.11](https://www.python.org/downloads/)
+- **Additional Dependencies**:
+  - [uvicorn](https://www.uvicorn.org/) 0.27.1 (ASGI server)
+  - [psycopg2-binary](https://pypi.org/project/psycopg2-binary/) (PostgreSQL adapter)
+  - [python-multipart](https://pypi.org/project/python-multipart/) 0.0.6 (Form processing)
+  - [typing-extensions](https://pypi.org/project/typing-extensions/) 4.9.0
 
-## Test and Deploy
+## Prerequisites
 
-Use the built-in continuous integration in GitLab.
+- [Python 3.11+](https://www.python.org/downloads/)
+- [PostgreSQL](https://www.postgresql.org/download/) database
+- [Docker](https://docs.docker.com/get-docker/) (optional, for containerized deployment)
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Deployment Options
 
-***
+### 1. 🚀 Quick Start with Docker Compose
 
-# Editing this README
+The fastest way to get the application running locally:
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+1. **Clone the repository:**
 
-## Suggestions for a good README
+   ```bash
+   git clone https://gitlab.com/sela-tracks/1109/students/idosh/application/todo-app.git
+   cd todo-app
+   ```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+2. **Start the application using the Docker image from Docker Hub:**
 
-## Name
-Choose a self-explaining name for your project.
+   ```bash
+   docker compose up -d
+   ```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+3. **Access the application:**
+   Open your browser and navigate to [http://localhost:8000](http://localhost:8000)
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+   `To stop the application:`
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+   ```bash
+   docker compose down
+   ```
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+   To stop the application and remove all data:
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+   ```bash
+   docker compose down -v
+   ```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### 2. Local Development Setup
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+1. **Clone the repository:**
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+   ```bash
+   git clone [<repository-url>](https://gitlab.com/sela-tracks/1109/students/idosh/application/todo-app.git)
+   cd todo-app
+   ```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+2. **Create and activate virtual environment:**
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   ```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+3. **Install dependencies:**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set environment variables:**
+
+   ```bash
+   export DATABASE_HOST=localhost
+   export DATABASE_NAME=your_db_name
+   export DATABASE_USER=your_db_user
+   export DATABASE_PASSWORD=your_password
+   export DATABASE_PORT=5432
+   ```
+
+5. **Run the application:**
+
+   ```bash
+   uvicorn web_app:app --host 0.0.0.0 --port 8000
+   ```
+
+### 3. Docker Deployment
+
+1. **Run the container using the pre-built Docker image from Docker Hub:**
+
+   ```bash
+   docker run -d \
+     --name todo-app \
+     -e DATABASE_HOST=your_db_host \
+     -e DATABASE_NAME=your_db_name \
+     -e DATABASE_USER=your_db_user \
+     -e DATABASE_PASSWORD=your_password \
+     -e DATABASE_PORT=5432 \
+     -p 8000:8000 \
+     idoshoshani123/my-todo-app:latest
+   ```
+
+## Environment Variables
+
+| Variable          | Description             | Required | Default |
+| ----------------- | ----------------------- | -------- | ------- |
+| DATABASE_HOST     | PostgreSQL host address | Yes      | -       |
+| DATABASE_NAME     | Database name           | Yes      | -       |
+| DATABASE_USER     | Database username       | Yes      | -       |
+| DATABASE_PASSWORD | Database password       | Yes      | -       |
+| DATABASE_PORT     | Database port           | No       | 5432    |
+
+## API Endpoints
+
+| Method | Endpoint                   | Description                       |
+| ------ | -------------------------- | --------------------------------- |
+| GET    | `/`                        | Display home page with all tasks  |
+| POST   | `/add-task`                | Create a new task                 |
+| POST   | `/update-status/{task_id}` | Update task status                |
+| POST   | `/delete-task/{task_id}`   | Delete a task                     |
+| POST   | `/update-task/{task_id}`   | Update task title and description |
+
+## Database Schema
+
+The application uses a single `tasks` table with the following structure:
+
+```sql
+CREATE TABLE tasks (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    status VARCHAR(20) NOT NULL,
+    due_date TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## Security Features
+
+- Database credentials managed through environment variables
+- Non-root user in Docker container
+- [Distroless](https://github.com/GoogleContainerTools/distroless) base image for minimal attack surface
+- Input validation and sanitization
+- Error handling for all database operations
+
+## Error Handling
+
+The application includes comprehensive error handling for:
+
+- Database connection issues
+- Task creation/update/deletion operations
+- Invalid status updates
+- Missing environment variables
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT) - see the [LICENSE](LICENSE) file for details.
+
+## Additional Resources
+
+- [FastAPI Documentation](https://fastapi.tiangolo.com/tutorial/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [Docker Documentation](https://docs.docker.com/)
+- [Python venv Documentation](https://docs.python.org/3/library/venv.html)
+- [Uvicorn Documentation](https://www.uvicorn.org/)
+
+---
+
+[Back to Top](#fastapi-todo-application)
