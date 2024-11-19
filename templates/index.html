@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .task-card {
+            transition: transform 0.2s ease-in-out;
+            border-left: 4px solid #dee2e6;
+            padding: 1.5rem;   
+            background-color: #f8f9fa;
+
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+        }
+        .task-card.pending {
+            border-left-color: #ffc107;
+        }
+        .task-card.in_progress {
+            border-left-color: #0d6efd;
+        }
+        .task-card.completed {
+            border-left-color: #198754;
+        }
+        .task-status {
+            font-size: 0.875rem;
+        }
+        .status-badge.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-badge.in_progress {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+        .status-badge.completed {
+            background-color: #d1e7dd;
+            color: #0a3622;
+        }
+        .action-buttons {
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .task-card:hover .action-buttons {
+            opacity: 1;
+        }
+        .action-buttons button {
+            transition: transform 0.2s ease-in-out;
+        }
+        .action-buttons button:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center justify-content-between mb-4"> 
+                    <h1 class="h3 mb-0">My Todo List</h1>
+                    <div class="d-flex gap-2">
+                        <div class="btn-group me-2" role="group">
+                            {% set task_counts = {"all": 0, "pending": 0, "in_progress": 0, "completed": 0} %}
+
+                            {% if tasks %}
+                                {% for task in tasks %}
+                                    {% set _ = task_counts.update({task.status.value: task_counts[task.status.value] + 1}) %}
+                                    {% set _ = task_counts.update({"all": task_counts["all"] + 1}) %}
+                                {% endfor %}
+                            {% endif %}
+                            
+                            {% for status, label, color in [("all", "All", "secondary"), ("pending", "Pending", "warning"), ("in_progress", "In Progress", "primary"), ("completed", "Completed", "success")] %}
+                            <button type="button" class="btn btn-outline-{{ color }}{% if status == 'all' %} active{% endif %}" onclick="filterTasks('{{ status }}')">
+                                {{ label }}
+                                <span class="badge bg-{{ color }} ms-1">{{ task_counts[status] }}</span>
+                            </button>
+                        {% endfor %}
+                        </div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                            <i class="fas fa-plus me-2"></i>Add Task
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Task List -->
+                {% if tasks %}
+                    {% for task in tasks %}
+                    <div class="task-card card mb-3 shadow-sm {{ task.status.value }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title mb-2">{{ task.title }}</h5>
+                                    <p class="card-text text-muted mb-3">{{ task.description }}</p>
+                                </div>
+                                <div class="action-buttons ms-3">
+                                    <button class="btn btn-sm btn-outline-primary me-2" 
+                                            onclick="prepareEdit({{ task.id }}, '{{ task.title }}', '{{ task.description }}')"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editTaskModal">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="confirmDelete({{ task.id }})"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteConfirmModal">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted me-3">
+                                        <i class="far fa-clock me-1"></i>
+                                        Created: {{ task.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    </small>
+                                    <span class="status-badge badge rounded-pill {{ task.status.value }} px-3 py-2">
+                                        {{ task.status.value | replace("_", " ") | title }}
+                                    </span>
+                                </div>
+                                <form action="/update-status/{{ task.id }}" method="POST" class="d-flex gap-2">
+                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                        <option value="pending" {% if task.status.value == "pending" %}selected{% endif %}>Pending</option>
+                                        <option value="in_progress" {% if task.status.value == "in_progress" %}selected{% endif %}>In Progress</option>
+                                        <option value="completed" {% if task.status.value == "completed" %}selected{% endif %}>Completed</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                        <p class="lead">No tasks yet. Start by adding your first task!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal fade" id="addTaskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="/add-task" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <input class="form-control" id="description" name="description" type=text></input>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal fade" id="editTaskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editTaskForm" method="POST" action="">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editTitle" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="editTitle" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDescription" class="form-label">Description</label>
+                            <input class="form-control" id="editDescription" name="description" type="text"></input>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this task? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteTaskForm" method="POST" action="">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function prepareEdit(taskId, title, description) {
+            const form = document.getElementById('editTaskForm');
+            form.action = `/update-task/${taskId}`;
+            document.getElementById('editTitle').value = decodeHtmlEntities(title);
+            document.getElementById('editDescription').value = decodeHtmlEntities(description);
+        }
+        
+        function decodeHtmlEntities(text) {
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = text;
+            return textarea.value;
+        }
+        
+        function confirmDelete(taskId) {
+            document.getElementById('deleteTaskForm').action = `/delete-task/${taskId}`;
+        }
+        function updateTaskCounters() {
+            const tasks = document.querySelectorAll('.task-card');
+            const counts = {
+                all: tasks.length,
+                pending: document.querySelectorAll('.task-card.pending').length,
+                in_progress: document.querySelectorAll('.task-card.in_progress').length,
+                completed: document.querySelectorAll('.task-card.completed').length
+            };
+        
+            // עדכון המספרים בכפתורים
+            Object.keys(counts).forEach(status => {
+                const badge = document.querySelector(`button[onclick="filterTasks('${status}')"] .badge`);
+                if (badge) {
+                    badge.textContent = counts[status];
+                }
+            });
+        }
+        
+
+        
+        function filterTasks(status) {
+            const tasks = document.querySelectorAll('.task-card');
+            
+            tasks.forEach(task => {
+                if (status === 'all' || task.classList.contains(status)) {
+                    task.style.display = '';
+                } else {
+                    task.style.display = 'none';
+                }
+            });
+            // מעדכן את הכפתור הפעיל
+            document.querySelectorAll('.btn-group button').forEach(button => {
+                button.classList.remove('active');
+                if (button.textContent.trim().toLowerCase() === status || 
+                   (status === 'all' && button.textContent.trim() === 'All')) {
+                    button.classList.add('active');
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTaskCounters();
+        });
+        
+    </script>
+</body>
+</html>
