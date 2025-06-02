@@ -16,14 +16,14 @@ COPY . /app
 FROM gcr.io/distroless/python3
 
 # Use non root user
-USER nonroot:nonroot
+USER 65532:65532
 
 # Set workdir
 WORKDIR /app
 
 # Copying the application files from the previous step
-COPY --from=build --chown=nonroot:nonroot /app /app
-COPY --from=build --chown=nonroot:nonroot /app/dependencies /app/dependencies
+COPY --from=build --chown=65532:65532 /app /app
+COPY --from=build --chown=65532:65532 /app/dependencies /app/dependencies
 
 # Setting an environment variable so Python knows where to find the dependencies
 ENV PYTHONPATH=/app/dependencies
