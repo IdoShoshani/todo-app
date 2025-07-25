@@ -30,7 +30,7 @@ COPY --from=build --chown=65532:65532 /app/dependencies /app/dependencies
 # Setting an environment variable so Python knows where to find the dependencies
 ENV PYTHONPATH=/app/dependencies
 
-# Enviroment Variables for database connection
+# Environment Variables for database connection
 ENV DATABASE_HOST= \
     DATABASE_NAME= \
     DATABASE_USER= \
