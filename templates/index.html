@@ -74,7 +74,7 @@
                             {% endif %}
                             
                             {% for status, label, color in [("all", "All", "secondary"), ("pending", "Pending", "warning"), ("in_progress", "In Progress", "primary"), ("completed", "Completed", "success")] %}
-                            <button type="button" class="btn btn-outline-{{ color }}{% if status == 'all' %} active{% endif %}" onclick="filterTasks('{{ status }}')">
+                            <button type="button" class="btn btn-outline-{{ color }}{% if status == 'all' %} active{% endif %}" onclick="filterTasks('{{ status }}')" data-status="{{ status }}">
                                 {{ label }}
                                 <span class="badge bg-{{ color }} ms-1">{{ task_counts[status] }}</span>
                             </button>
@@ -248,7 +248,7 @@
         
             // עדכון המספרים בכפתורים
             Object.keys(counts).forEach(status => {
-                const badge = document.querySelector(`button[onclick="filterTasks('${status}')"] .badge`);
+                const badge = document.querySelector(`button[data-status="${status}"] .badge`);
                 if (badge) {
                     badge.textContent = counts[status];
                 }
@@ -270,8 +270,7 @@
             // מעדכן את הכפתור הפעיל
             document.querySelectorAll('.btn-group button').forEach(button => {
                 button.classList.remove('active');
-                if (button.textContent.trim().toLowerCase() === status || 
-                   (status === 'all' && button.textContent.trim() === 'All')) {
+                if (button.dataset.status === status) {
                     button.classList.add('active');
                 }
             });
