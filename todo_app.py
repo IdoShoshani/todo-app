@@ -176,6 +176,10 @@ class TodoManager:
         """
         try:
             self.cur.execute(update_query, (status.value, task_id))
+            if self.cur.rowcount == 0:
+                self.conn.rollback()
+                print(f"No task found with ID: {task_id}")
+                return False
             self.conn.commit()
             print(f"Task {task_id} status updated to {status.value}")
             return True
@@ -250,6 +254,10 @@ class TodoManager:
         """
         try:
             self.cur.execute(update_query, (title, description, task_id))
+            if self.cur.rowcount == 0:
+                self.conn.rollback()
+                print(f"No task found with ID: {task_id}")
+                return False
             self.conn.commit()
             print(f"Task {task_id} updated successfully")
             return True
