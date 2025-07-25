@@ -1,4 +1,4 @@
-# Use any Node.js base image that you want (as long as it's Alpine)!
+# Use a Python base image with a specified version
 ARG PYTHON_VERSION=3.11
 FROM python:${PYTHON_VERSION}-slim AS build
 
